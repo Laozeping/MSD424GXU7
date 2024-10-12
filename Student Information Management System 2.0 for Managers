@@ -1,0 +1,120 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Student {
+    String id;
+    String name;
+    String email;
+    int attendance;
+    ArrayList<Integer> grades;
+
+    Student(String id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.attendance = 0;
+        this.grades = new ArrayList<>();
+    }
+
+    void addGrade(int grade) {
+        grades.add(grade);
+    }
+
+    double getAverageGrade() {
+        return grades.stream().mapToInt(i -> i).average().orElse(0.0);
+    }
+
+    void markAttendance() {
+        attendance++;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Email: " + email + 
+               ", Attendance: " + attendance + ", Avg. Grade: " + getAverageGrade();
+    }
+}
+
+public class StudentInformationSystem {
+    static ArrayList<Student> students = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\nStudent Information Management System");
+            System.out.println("1. Data Entry and Management");
+            System.out.println("2. Communication and Notifications");
+            System.out.println("3. Grade and Attendance Management");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            
+            switch (choice) {
+                case 1:
+                    dataEntryAndManagement();
+                    break;
+                case 2:
+                    communicationAndNotifications();
+                    break;
+                case 3:
+                    gradeAndAttendanceManagement();
+                    break;
+                case 4:
+                    System.out.println("Exiting system.");
+                    return;
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+
+    // 数据录入与管理
+    private static void dataEntryAndManagement() {
+        System.out.print("Enter student ID: ");
+        String id = scanner.nextLine();
+        System.out.print("Enter student name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter student email: ");
+        String email = scanner.nextLine();
+
+        students.add(new Student(id, name, email));
+        System.out.println("Student added successfully.");
+    }
+
+    // 通讯与通知功能
+    private static void communicationAndNotifications() {
+        if (students.isEmpty()) {
+            System.out.println("No students available.");
+            return;
+        }
+        System.out.println("Students List:");
+        for (Student student : students) {
+            System.out.println(student);
+        }
+        System.out.print("Enter email to send notification: ");
+        String email = scanner.nextLine();
+        // Simulate sending email
+        System.out.println("Notification sent to " + email + ".");
+    }
+
+    // 成绩与出勤管理
+    private static void gradeAndAttendanceManagement() {
+        System.out.print("Enter student ID to manage: ");
+        String id = scanner.nextLine();
+        
+        for (Student student : students) {
+            if (student.id.equals(id)) {
+                System.out.print("Enter grade to add: ");
+                int grade = scanner.nextInt();
+                scanner.nextLine();  // Consume newline
+                student.addGrade(grade);
+                student.markAttendance();
+                System.out.println("Grade added and attendance marked for " + student.name);
+                return;
+            }
+        }
+        System.out.println("Student not found.");
+    }
+}
