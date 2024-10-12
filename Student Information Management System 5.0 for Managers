@@ -1,0 +1,268 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
+class Message {
+    String sender;
+    String receiver;
+    String content;
+
+    Message(String sender, String receiver, String content) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return sender + " to " + receiver + ": " + content;
+    }
+}
+
+class Student {
+    String id;
+    String name;
+    String email;
+    int attendance;
+    ArrayList<Integer> grades;
+    ArrayList<Message> inbox;
+
+    Student(String id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.attendance = 0;
+        this.grades = new ArrayList<>();
+        this.inbox = new ArrayList<>();
+    }
+
+    void addGrade(int grade) {
+        grades.add(grade);
+    }
+
+    void updateGrade(int index, int newGrade) {
+        if (index >= 0 && index < grades.size()) {
+            grades.set(index, newGrade);
+        }
+    }
+
+    double getAverageGrade() {
+        return grades.stream().mapToInt(i -> i).average().orElse(0.0);
+    }
+
+    void markAttendance() {
+        attendance++;
+    }
+
+    public int getAttendance() {
+        return attendance; // 返回出勤次数
+    }
+
+    public void receiveMessage(Message message) {
+        inbox.add(message);
+    }
+
+    public void displayMessages() {
+        if (inbox.isEmpty()) {
+            System.out.println("No new messages.");
+        } else {
+            System.out.println("Messages for " + name + ":");
+            for (Message msg : inbox) {
+                System.out.println(msg);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Email: " + email +
+               ", Attendance: " + attendance + ", Avg. Grade: " + getAverageGrade();
+    }
+}
+
+class Teacher {
+    String id;
+    String name;
+    String email;
+    ArrayList<Message> inbox;
+
+    Teacher(String id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.inbox = new ArrayList<>();
+    }
+
+    public void receiveMessage(Message message) {
+        inbox.add(message);
+    }
+
+    public void displayMessages() {
+        if (inbox.isEmpty()) {
+            System.out.println("No new messages.");
+        } else {
+            System.out.println("Messages for " + name + ":");
+            for (Message msg : inbox) {
+                System.out.println(msg);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Email: " + email;
+    }
+}
+
+class Course {
+    String name;
+    Teacher teacher;
+
+    Course(String name, Teacher teacher) {
+        this.name = name;
+        this.teacher = teacher;
+    }
+
+    @Override
+    public String toString() {
+        return "Course: " + name + ", Teacher: " + teacher.name;
+    }
+}
+
+public class StudentInformationSystem {
+    static ArrayList<Student> students = new ArrayList<>();
+    static ArrayList<Teacher> teachers = new ArrayList<>();
+    static ArrayList<Course> courses = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        // 定时任务模拟定时通知
+        setupScheduledNotifications();
+        
+        while (true) {
+            System.out.println("\nStudent Information Management System");
+            System.out.println("1. Data Entry and Management");
+            System.out.println("2. Communication and Notifications");
+            System.out.println("3. Grade and Attendance Management");
+            System.out.println("4. Generate Student Report");
+            System.out.println("5. Exit");
+            System.out.print("Choose an option: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            
+            switch (choice) {
+                case 1:
+                    dataEntryAndManagement();
+                    break;
+                case 2:
+                    communicationAndNotifications();
+                    break;
+                case 3:
+                    gradeAndAttendanceManagement();
+                    break;
+                case 4:
+                    generateStudentReport();
+                    break;
+                case 5:
+                    System.out.println("Exiting system.");
+                    return;
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+
+    // 定时发送通知
+    private static void setupScheduledNotifications() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (!students.isEmpty()) {
+                    System.out.println("Scheduled notification: Don't forget to check your grades!");
+                }
+            }
+        }, 0, 60000); // 60秒发送一次通知
+    }
+
+    // 数据录入与管理
+    private static void dataEntryAndManagement() {
+        System.out.println("1. Add Student");
+        System.out.println("2. Add Teacher");
+        System.out.println("3. Add Course");
+        System.out.println("4. Assign Teacher to Course");
+        System.out.print("Choose an option: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        switch (choice) {
+            case 1:
+                System.out.print("Enter student ID: ");
+                String studentId = scanner.nextLine();
+                System.out.print("Enter student name: ");
+                String studentName = scanner.nextLine();
+                System.out.print("Enter student email: ");
+                String studentEmail = scanner.nextLine();
+
+                students.add(new Student(studentId, studentName, studentEmail));
+                System.out.println("Student added successfully.");
+                break;
+
+            case 2:
+                System.out.print("Enter teacher ID: ");
+                String teacherId = scanner.nextLine();
+                System.out.print("Enter teacher name: ");
+                String teacherName = scanner.nextLine();
+                System.out.print("Enter teacher email: ");
+                String teacherEmail = scanner.nextLine();
+
+                teachers.add(new Teacher(teacherId, teacherName, teacherEmail));
+                System.out.println("Teacher added successfully.");
+                break;
+
+            case 3:
+                System.out.print("Enter course name: ");
+                String courseName = scanner.nextLine();
+                System.out.print("Enter teacher ID for this course: ");
+                String tid = scanner.nextLine();
+
+                Teacher teacher = null;
+                for (Teacher t : teachers) {
+                    if (t.id.equals(tid)) {
+                        teacher = t;
+                        break;
+                    }
+                }
+                if (teacher != null) {
+                    courses.add(new Course(courseName, teacher));
+                    System.out.println("Course added successfully.");
+                } else {
+                    System.out.println("Teacher not found.");
+                }
+                break;
+
+            case 4:
+                System.out.print("Enter course name to assign teacher: ");
+                String cName = scanner.nextLine();
+                System.out.print("Enter teacher ID to assign: ");
+                String assignTid = scanner.nextLine();
+
+                Course courseToAssign = null;
+                for (Course c : courses) {
+                    if (c.name.equals(cName)) {
+                        courseToAssign = c;
+                        break;
+                    }
+                }
+                Teacher teacherToAssign = null;
+                for (Teacher t : teachers) {
+                    if (t.id.equals(assignTid)) {
+                        teacherToAssign = t;
+                        break;
+                    }
+                }
+                if (courseToAssign != null && teacherToAssign != null) {
+                    courseToAssign.teacher = teacherToAssign;
+                    System
