@@ -1,0 +1,262 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Student {
+    String id;
+    String name;
+    String email;
+    String dateOfBirth; // 添加的字段：出生日期
+    String gender;      // 添加的字段：性别
+    String grade;       // 添加的字段：年级
+    int attendance;
+    ArrayList<Integer> grades;
+
+    Student(String id, String name, String email, String dateOfBirth, String gender, String grade) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.grade = grade;
+        this.attendance = 0;
+        this.grades = new ArrayList<>();
+    }
+
+    void addGrade(int grade) {
+        grades.add(grade);
+    }
+
+    double getAverageGrade() {
+        return grades.stream().mapToInt(i -> i).average().orElse(0.0);
+    }
+
+    void markAttendance() {
+        attendance++;
+    }
+
+    public int getAttendance() {
+        return attendance; // 返回出勤次数
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Email: " + email + 
+               ", Date of Birth: " + dateOfBirth + ", Gender: " + gender + 
+               ", Grade: " + grade + ", Attendance: " + attendance + 
+               ", Avg. Grade: " + getAverageGrade();
+    }
+}
+
+class Teacher {
+    String id;
+    String name;
+    String email;
+    String subjectArea; // 添加的字段：科目领域
+
+    Teacher(String id, String name, String email, String subjectArea) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.subjectArea = subjectArea;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Email: " + email + ", Subject Area: " + subjectArea;
+    }
+}
+
+class Course {
+    String name;
+    String description; // 添加的字段：课程描述
+    Teacher teacher;
+
+    Course(String name, String description, Teacher teacher) {
+        this.name = name;
+        this.description = description;
+        this.teacher = teacher;
+    }
+
+    @Override
+    public String toString() {
+        return "Course: " + name + ", Description: " + description + ", Teacher: " + teacher.name;
+    }
+}
+
+public class StudentInformationSystem {
+    static ArrayList<Student> students = new ArrayList<>();
+    static ArrayList<Teacher> teachers = new ArrayList<>();
+    static ArrayList<Course> courses = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\nStudent Information Management System");
+            System.out.println("1. Data Entry and Management");
+            System.out.println("2. Communication and Notifications");
+            System.out.println("3. Grade and Attendance Management");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            
+            switch (choice) {
+                case 1:
+                    dataEntryAndManagement();
+                    break;
+                case 2:
+                    communicationAndNotifications();
+                    break;
+                case 3:
+                    gradeAndAttendanceManagement();
+                    break;
+                case 4:
+                    System.out.println("Exiting system.");
+                    return;
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+
+    // 数据录入与管理
+    private static void dataEntryAndManagement() {
+        System.out.println("1. Add Student");
+        System.out.println("2. Add Teacher");
+        System.out.println("3. Add Course");
+        System.out.print("Choose an option: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        switch (choice) {
+            case 1:
+                System.out.print("Enter student ID: ");
+                String studentId = scanner.nextLine();
+                System.out.print("Enter student name: ");
+                String studentName = scanner.nextLine();
+                System.out.print("Enter student email: ");
+                String studentEmail = scanner.nextLine();
+                System.out.print("Enter student date of birth (YYYY-MM-DD): ");
+                String studentDOB = scanner.nextLine();
+                System.out.print("Enter student gender: ");
+                String studentGender = scanner.nextLine();
+                System.out.print("Enter student grade: ");
+                String studentGrade = scanner.nextLine();
+
+                students.add(new Student(studentId, studentName, studentEmail, studentDOB, studentGender, studentGrade));
+                System.out.println("Student added successfully.");
+                break;
+
+            case 2:
+                System.out.print("Enter teacher ID: ");
+                String teacherId = scanner.nextLine();
+                System.out.print("Enter teacher name: ");
+                String teacherName = scanner.nextLine();
+                System.out.print("Enter teacher email: ");
+                String teacherEmail = scanner.nextLine();
+                System.out.print("Enter teacher subject area: ");
+                String subjectArea = scanner.nextLine();
+
+                teachers.add(new Teacher(teacherId, teacherName, teacherEmail, subjectArea));
+                System.out.println("Teacher added successfully.");
+                break;
+
+            case 3:
+                System.out.print("Enter course name: ");
+                String courseName = scanner.nextLine();
+                System.out.print("Enter course description: ");
+                String courseDescription = scanner.nextLine();
+                System.out.print("Enter teacher ID for this course: ");
+                String tid = scanner.nextLine();
+
+                Teacher teacher = null;
+                for (Teacher t : teachers) {
+                    if (t.id.equals(tid)) {
+                        teacher = t;
+                        break;
+                    }
+                }
+                if (teacher != null) {
+                    courses.add(new Course(courseName, courseDescription, teacher));
+                    System.out.println("Course added successfully.");
+                } else {
+                    System.out.println("Teacher not found.");
+                }
+                break;
+
+            default:
+                System.out.println("Invalid option.");
+                break;
+        }
+    }
+
+    // 通讯与通知功能
+    private static void communicationAndNotifications() {
+        if (students.isEmpty()) {
+            System.out.println("No students available.");
+            return;
+        }
+        System.out.println("1. Send notification to a single student");
+        System.out.println("2. Send notification to all students");
+        System.out.print("Choose an option: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        switch (choice) {
+            case 1:
+                System.out.print("Enter student email to send notification: ");
+                String email = scanner.nextLine();
+                // Simulate sending email
+                System.out.println("Notification sent to " + email + ".");
+                break;
+
+            case 2:
+                System.out.print("Enter notification message: ");
+                String message = scanner.nextLine();
+                // Simulate sending email to all students
+                for (Student student : students) {
+                    System.out.println("Notification sent to " + student.email + ": " + message);
+                }
+                break;
+
+            default:
+                System.out.println("Invalid option.");
+                break;
+        }
+    }
+
+    // 成绩与出勤管理
+    private static void gradeAndAttendanceManagement() {
+        System.out.print("Enter student ID to manage: ");
+        String id = scanner.nextLine();
+        
+        for (Student student : students) {
+            if (student.id.equals(id)) {
+                System.out.println("1. Add Grade");
+                System.out.println("2. View Attendance Record");
+                System.out.print("Choose an option: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
+                switch (choice) {
+                    case 1:
+                        System.out.print("Enter grade to add: ");
+                        int grade = scanner.nextInt();
+                        scanner.nextLine();  // Consume newline
+                        student.addGrade(grade);
+                        student.markAttendance();
+                        System.out.println("Grade added and attendance marked for " + student.name);
+                        break;
+                    case 2:
+                        System.out.println(student.name + "'s Attendance: " + student.getAttendance());
+                        break;
+                    default:
+                        System.out.println("Invalid option.");
+                }
+                return;
+            }
+        }
+        System.out.println("Student not found.");
+    }
+}
