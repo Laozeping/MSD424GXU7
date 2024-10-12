@@ -1,1 +1,85 @@
-1
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Student {
+String id;
+String name;
+String email;
+int attendance;
+ArrayList<Integer> grades;
+
+// 构造函数
+Student(String id, String name, String email) {
+// ...
+}
+
+void addGrade(int grade) {
+// ...
+}
+
+double getAverageGrade() {
+// ...
+return 0.0;
+}
+
+void markAttendance() {
+// ...
+}
+
+@Override
+public String toString() {
+// ...
+return "";
+}
+}
+
+public class StudentInformationSystem {
+static ArrayList<Student> students = new ArrayList<>();
+static Scanner scanner = new Scanner(System.in);
+
+public static void main(String[] args) {
+while (true) {
+System.out.println("\nStudent Information Management System");
+System.out.println("1. Data Entry and Management");
+System.out.println("2. Communication and Notifications");
+System.out.println("3. Grade and Attendance Management");
+System.out.println("4. Exit");
+System.out.print("Choose an option: ");
+
+int choice = scanner.nextInt();
+scanner.nextLine(); // Consume newline
+
+switch (choice) {
+case 1:
+dataEntryAndManagement();
+break;
+case 2:
+communicationAndNotifications();
+break;
+case 3:
+gradeAndAttendanceManagement();
+break;
+case 4:
+System.out.println("Exiting system.");
+return;
+default:
+System.out.println("Invalid option. Try again.");
+}
+}
+}
+
+// 数据录入与管理
+private static void dataEntryAndManagement() {
+// ...
+}
+
+// 通讯与通知功能
+private static void communicationAndNotifications() {
+// ...
+}
+
+// 成绩与出勤管理
+private static void gradeAndAttendanceManagement() {
+// ...
+}
+}
